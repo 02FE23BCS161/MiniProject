@@ -1,0 +1,13 @@
+<h2>All Teams</h2>
+
+<a class="button" href="/teams/create">Create New Team</a>
+
+<ul>
+    <% teams.forEach(t => { %>
+        <li>
+            <strong><%= t.teamName %></strong> 
+            — Members: <%= t.members.length %>
+            <a href="/teams/<%= t._id %>">View</a>
+        </li>
+    <% }) %>
+</ul>

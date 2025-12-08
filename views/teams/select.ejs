@@ -1,0 +1,42 @@
+<h2>Select Team</h2>
+
+<form action="/teams/select" method="POST">
+    <% if (teams && teams.length) { %>
+        <% teams.forEach(t => { %>
+            <div>
+                <input type="radio" name="teamId" value="<%= t._id %>" id="team_<%= t._id %>" required>
+                <label for="team_<%= t._id %>"><%= t.teamName %></label>
+            </div>
+        <% }) %>
+        <button type="submit">Join</button>
+    <% } else { %>
+        <p>You are not part of any team.</p>
+        <a href="/teams/create" style="text-decoration: none;">Create a new team</a>
+    <% } %>
+</form>
+
+<% /* Allow leaders to add members directly from the Change Team page */ %>
+<% if (teams && teams.length) { %>
+    <h3>Add Member (only visible to team leaders)</h3>
+    <% teams.forEach(t => { %>
+        <%
+            let isLeader = false;
+            if (t.leader && user && t.leader._id && user._id && t.leader._id.toString() === user._id.toString()) {
+                isLeader = true;
+            }
+            if (!t.leader && user && t.leaderName && t.leaderName === user.name) {
+                isLeader = true;
+            }
+        %>
+        <% if (isLeader) { %>
+            <div style="border:1px solid #ccc;padding:8px;margin:8px 0;">
+                <strong><%= t.teamName %></strong>
+                <form action="/teams/<%= t._id %>/add-member" method="POST" style="margin-top:8px;">
+                    <label for="memberEmail_<%= t._id %>">Member Email</label>
+                    <input id="memberEmail_<%= t._id %>" type="email" name="memberEmail" placeholder="user@example.com" required>
+                    <button type="submit">Add Member</button>
+                </form>
+            </div>
+        <% } %>
+    <% }) %>
+<% } %>

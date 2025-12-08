@@ -1,0 +1,177 @@
+<h2>Add File</h2>
+
+<div class="file-options">
+    <div class="option-buttons">
+        <button type="button" class="option-btn active" onclick="showOption('upload')">Upload from Local</button>
+        <button type="button" class="option-btn" onclick="showOption('create')">Create New File</button>
+    </div>
+
+    <!-- Upload local file option -->
+    <div id="upload-section" class="file-section active">
+        <h3>Upload File from Local Machine</h3>
+        <form action="/files/upload" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="fileType" value="upload">
+            
+            <label>Select File</label>
+            <input type="file" name="file" required>
+
+            <label>File Name (optional - will use filename if empty)</label>
+            <input type="text" name="fileName" placeholder="Leave empty to use uploaded filename">
+
+            <label>Select Primary Node for Storage</label>
+            <select name="primaryNodeId" required id="upload-node-select">
+                <option value="">Loading nodes...</option>
+            </select>
+
+            <button type="submit">Upload File</button>
+        </form>
+    </div>
+
+    <!-- Create new file option -->
+    <div id="create-section" class="file-section">
+        <h3>Create New File</h3>
+        <form action="/files/upload" method="POST">
+            <input type="hidden" name="fileType" value="create">
+            
+            <label>File Name</label>
+            <input type="text" name="fileName" placeholder="e.g., document.txt" required>
+
+            <label>File Content</label>
+            <textarea name="fileContent" rows="10" placeholder="Enter file content here..."></textarea>
+
+            <label>Select Primary Node for Storage</label>
+            <select name="primaryNodeId" required id="create-node-select">
+                <option value="">Loading nodes...</option>
+            </select>
+
+            <button type="submit">Create File</button>
+        </form>
+    </div>
+</div>
+
+<a href="/files">Back</a>
+
+<script>
+    // Load nodes and populate both select dropdowns
+    fetch('/nodes/api/list')
+        .then(res => res.json())
+        .then(nodes => {
+            if (!nodes || nodes.length === 0) {
+                document.getElementById('upload-node-select').innerHTML = '<option value="">No nodes available</option>';
+                document.getElementById('create-node-select').innerHTML = '<option value="">No nodes available</option>';
+                return;
+            }
+
+            let html = '<option value="">-- Select a node --</option>';
+            nodes.forEach(node => {
+                html += `<option value="${node._id}">${node.nodeName}</option>`;
+            });
+
+            document.getElementById('upload-node-select').innerHTML = html;
+            document.getElementById('create-node-select').innerHTML = html;
+        })
+        .catch(err => {
+            console.error('Failed to load nodes:', err);
+            document.getElementById('upload-node-select').innerHTML = '<option value="">Error loading nodes</option>';
+            document.getElementById('create-node-select').innerHTML = '<option value="">Error loading nodes</option>';
+        });
+</script>
+
+<style>
+    .file-options {
+        max-width: 600px;
+    }
+
+    .option-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .option-btn {
+        padding: 10px 20px;
+        border: 1px solid #ccc;
+        background: white;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.3s;
+    }
+
+    .option-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .file-section {
+        display: none;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: #f9f9f9;
+    }
+
+    .file-section.active {
+        display: block;
+    }
+
+    .file-section form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .file-section label {
+        font-weight: bold;
+    }
+
+    .file-section input,
+    .file-section textarea,
+    .file-section select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: Arial, sans-serif;
+    }
+
+    .file-section textarea {
+        font-family: monospace;
+        resize: vertical;
+    }
+
+    .file-section button {
+        padding: 10px;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .file-section button:hover {
+        background: #218838;
+    }
+</style>
+
+<script>
+    function showOption(option) {
+        // Hide all sections
+        document.getElementById('upload-section').classList.remove('active');
+        document.getElementById('create-section').classList.remove('active');
+
+        // Remove active class from all buttons
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Show selected section and activate button
+        if (option === 'upload') {
+            document.getElementById('upload-section').classList.add('active');
+            document.querySelectorAll('.option-btn')[0].classList.add('active');
+        } else if (option === 'create') {
+            document.getElementById('create-section').classList.add('active');
+            document.querySelectorAll('.option-btn')[1].classList.add('active');
+        }
+    }
+</script>

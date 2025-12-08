@@ -1,0 +1,130 @@
+<h2>Servers - Monitor All Activity</h2>
+
+<% if (!nodes || nodes.length === 0) { %>
+    <p>No storage nodes created yet.</p>
+<% } else { %>
+    <div style="margin-top: 20px;">
+        <% nodes.forEach(n => { %>
+            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; background: #f9f9f9;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <h3 style="margin: 0;"><%= n.nodeName %></h3>
+                        <p style="margin: 5px 0; color: #666;">
+                            <code><%= n.nodeId %></code> 
+                            <% if (n.status === "online") { %>
+                                — <span style="color: green; font-weight: bold;">🟢 Online</span>
+                            <% } else { %>
+                                — <span style="color: red; font-weight: bold;">🔴 Offline</span>
+                            <% } %>
+                        </p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="margin: 5px 0;"><strong><%= n.fileCount || 0 %></strong> Files</p>
+                        <p style="margin: 5px 0; color: #666;">
+                            <%= Math.round(n.usedStorage / 1024 / 1024) %> MB / 
+                            <%= Math.round(n.totalStorage / 1024 / 1024) %> MB
+                        </p>
+                    </div>
+                </div>
+
+                <% if (!n.files || n.files.length === 0) { %>
+                    <p style="color: #999; font-style: italic;">No files stored on this node</p>
+                <% } else { %>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <thead>
+                            <tr style="background: #e8e8e8;">
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">File Name</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 2px solid #ddd;">Status</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 2px solid #ddd;">Role</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 2px solid #ddd;">Owner</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 2px solid #ddd;">Team</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 2px solid #ddd;">Size</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% n.files.forEach(file => { %>
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="padding: 10px;"><strong><%= file.fileName %></strong></td>
+                                    <td style="padding: 10px; text-align: center;">
+                                        <% if (file.status === "pending_confirmation") { %>
+                                            <span style="background: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 3px; font-size: 12px;">
+                                                ⏱️ Pending Confirm
+                                            </span>
+                                        <% } else if (file.status === "pending_approval") { %>
+                                            <span style="background: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 3px; font-size: 12px;">
+                                                ⏸️ Needs Approval
+                                            </span>
+                                        <% } else if (file.status === "synced") { %>
+                                            <span style="background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 3px; font-size: 12px;">
+                                                ✓ Synced
+                                            </span>
+                                        <% } %>
+                                    </td>
+                                    <td style="padding: 10px; text-align: center;">
+                                        <% if (file.role === "primary") { %>
+                                            <span style="background: #cfe2ff; color: #084298; padding: 4px 8px; border-radius: 3px; font-size: 12px;">
+                                                🔴 Primary
+                                            </span>
+                                        <% } else { %>
+                                            <span style="background: #d1ecf1; color: #0c5460; padding: 4px 8px; border-radius: 3px; font-size: 12px;">
+                                                🔵 Replica
+                                            </span>
+                                        <% } %>
+                                    </td>
+                                    <td style="padding: 10px; text-align: center;">
+                                        <%= file.owner ? file.owner.username : "N/A" %>
+                                    </td>
+                                    <td style="padding: 10px; text-align: center;">
+                                        <%= file.team ? file.team.teamName : "N/A" %>
+                                    </td>
+                                    <td style="padding: 10px; text-align: center; color: #666;">
+                                        <%= Math.round(file.fileSize / 1024) %> KB
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                <% } %>
+            </div>
+        <% }) %>
+    </div>
+<% } %>
+
+<style>
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .button:hover {
+        background: #0056b3;
+    }
+
+    table {
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    table th {
+        background: #f8f9fa;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    table td {
+        vertical-align: middle;
+    }
+
+    code {
+        background: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: monospace;
+    }
+</style>
