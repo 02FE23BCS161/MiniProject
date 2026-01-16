@@ -13,6 +13,7 @@ const teamMiddleware = require("./middleware/team");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.use(express.static(path.join(__dirname, "public")));
 
 // ------------------------------------------
 // MongoDB Connection
@@ -87,3 +88,4 @@ app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 
 });
+
