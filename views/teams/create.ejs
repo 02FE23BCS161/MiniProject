@@ -1,0 +1,162 @@
+<h2>Create Team</h2>
+
+<form action="/teams/create" method="POST">
+    <label>Team Name</label>
+    <input type="text" name="teamName" required>
+
+    <label>Team Leader Name</label>
+    <input type="text" name="leaderName" placeholder="Full name of team leader" required>
+
+    <label style="font-weight: bold; margin-top: 20px; display: block;">Primary Node (Auto-created)</label>
+    <input type="text" name="primaryNodeName" placeholder="Primary Node Name (will be created automatically)" required style="margin-bottom: 20px;">
+
+    <label style="font-weight: bold; display: block;">Select Backup Nodes (Optional)</label>
+    <p style="color: #666; font-size: 14px; margin: 5px 0 15px 0;">Select up to 3 backup nodes for replication:</p>
+    
+    <div id="backup-nodes-section" style="padding: 10px; background: #f8f9fa; border-radius: 4px;">
+        <div style="margin-bottom: 15px;">
+            <label style="font-weight: normal; display: flex; align-items: center;">
+                <input type="checkbox" name="backupNodeCheckbox" value="1" onchange="toggleBackupInput(1)">
+                <span style="margin-left: 8px; cursor: pointer;">Server 1</span>
+            </label>
+            <input type="text" id="backupNodeName1" placeholder="Server 1 Name" style="display: none; margin-top: 8px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label style="font-weight: normal; display: flex; align-items: center;">
+                <input type="checkbox" name="backupNodeCheckbox" value="2" onchange="toggleBackupInput(2)">
+                <span style="margin-left: 8px; cursor: pointer;">Server 2</span>
+            </label>
+            <input type="text" id="backupNodeName2" placeholder="Server 2 Name" style="display: none; margin-top: 8px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="font-weight: normal; display: flex; align-items: center;">
+                <input type="checkbox" name="backupNodeCheckbox" value="3" onchange="toggleBackupInput(3)">
+                <span style="margin-left: 8px; cursor: pointer;">Server 3</span>
+            </label>
+            <input type="text" id="backupNodeName3" placeholder="Server 3 Name" style="display: none; margin-top: 8px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+    </div>
+
+    <button type="submit">Create Team</button>
+</form>
+
+<script>
+    function toggleBackupInput(nodeNumber) {
+        const checkbox = document.querySelector(`input[name="backupNodeCheckbox"][value="${nodeNumber}"]`);
+        const input = document.getElementById(`backupNodeName${nodeNumber}`);
+        
+        if (checkbox.checked) {
+            input.style.display = 'block';
+            input.required = true;
+        } else {
+            input.style.display = 'none';
+            input.required = false;
+            input.value = ''; // Clear value when unchecked
+        }
+    }
+
+    // Handle form submission
+    const form = document.querySelector('form');
+    form.addEventListener('submit', (e) => {
+        const teamName = document.querySelector('input[name="teamName"]').value.trim();
+        const leaderName = document.querySelector('input[name="leaderName"]').value.trim();
+        const primaryNodeName = document.querySelector('input[name="primaryNodeName"]').value.trim();
+        
+        if (!teamName) {
+            e.preventDefault();
+            alert('Team name is required.');
+            return;
+        }
+        if (!leaderName) {
+            e.preventDefault();
+            alert('Team leader name is required.');
+            return;
+        }
+        if (!primaryNodeName) {
+            e.preventDefault();
+            alert('Primary node name is required.');
+            return;
+        }
+
+        // Collect backup node names based on checked boxes
+        const backupNodes = [];
+        
+        for (let i = 1; i <= 3; i++) {
+            const checkbox = document.querySelector(`input[name="backupNodeCheckbox"][value="${i}"]`);
+            const input = document.getElementById(`backupNodeName${i}`);
+            
+            if (checkbox.checked) {
+                const nodeName = input.value.trim();
+                if (!nodeName) {
+                    e.preventDefault();
+                    alert(`Server ${i} name is required.`);
+                    return;
+                }
+                backupNodes.push(nodeName);
+            }
+        }
+
+        if (backupNodes.length > 3) {
+            e.preventDefault();
+            alert('You can select a maximum of 3 backup nodes.');
+            return;
+        }
+        
+        // Pass backup node names to server
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'backupNodeNames';
+        input.value = JSON.stringify(backupNodes);
+        form.appendChild(input);
+    });
+</script>
+
+<style>
+    form {
+        max-width: 600px;
+    }
+    
+    form label {
+        display: block;
+        margin: 15px 0 5px 0;
+        font-weight: bold;
+    }
+    
+    form input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    
+    form button {
+        padding: 12px 30px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 16px;
+        margin-top: 20px;
+    }
+    
+    form button:hover:not(:disabled) {
+        background: #0056b3;
+    }
+    
+    form button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+    input[type="checkbox"]:disabled,
+    input[type="radio"]:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+</style>

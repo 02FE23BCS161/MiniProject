@@ -1,0 +1,18 @@
+	The data for this work was collected in real time from 300+ participants in controlled environment. Participants spoke for 30secs in desired language and content of their choice. Further, to maintain uniformity and consistency the recorded data was converted in .wav format maintaining frequency of 48Hz. 
+	To enhance dataset size and improve model’s robustness and performance, two augmentation techniques were applied, random gain for scaling and noise addition for controlled Gaussian background noise. Scaling for random gain was done from 0.7 to 1.3 and noise addition of 50db, 60db, 70db, 80db, 90db and 100db. Each participant’s original recording was expanded to 13 augmented versions, increasing variability while preserving original identity.
+
+
+
+
+-------------------------------------------------------------------------------------
+3. Methodology
+3.1. Data Acquisition and Preparation
+	The data for this study were collected in real time from over 300 participants in controlled environment. Each participant spoke for approximately 30 seconds, using their language and content of choice. To ensure uniformity and consistency across recordings, all audio samples were converted to .wav format with a sampling frequency of 48kHz.
+	To enhance dataset size and improve the model’s robustness and performance, two augmentation techniques were applied: random gain and noise addition. Random gain scaling was applied in range of 0.7 to 1.3, while Gaussian noise was added at levels of 50db, 60db, 70db, 80db, 90db and 100db. Using these techniques, each participant’s original recording was expanded into 13 augmented versions, increasing variability while preserving the original vocal identity. 
+
+3.2. Feature Extraction and Engineering
+	 Features were extracted using openSMILE toolkit, a software tool that automatically extracts numerical features from audio or speech, to study the diversity and different properties of data. The extracted features were numerical in nature and 88 in number. EGemaps (Extended Geneva Minimalistic Acoustic Parameter Set) configuration, a specific preset configuration in openSMILE, was selected for its validated effectiveness in paralinguistic and affective speech analysis. 
+	Additionally, low-level descriptor (LLD) was calculated using Libroso, including features like average energy of the speech signal, variation (standard deviation) of energy, average zero cross rating, variation of ZCR, average intensity, variation in intensity and number of audio files. These complementary features enriched the acoustic representation of each sample. 
+
+
+           Traditional Prakriti assessment is usually performed by experienced practitioners through observation, pulse examination, questionnaires, and interviews. While these methods are deeply rooted in Ayurvedic knowledge, they often lack standardization and can vary between practitioners. This creates a growing need for scientific, repeatable and technology supported approach to Prakriti identification.

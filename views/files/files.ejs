@@ -1,0 +1,207 @@
+<h2>Files</h2>
+
+<a class="button" href="/files/upload">Add File</a>
+
+<% if (noTeam) { %>
+    <div class="alert alert-info">
+        <p>You are not part of any team. Ask your team leader to add you or <a href="/teams/create">create a new team</a>.</p>
+    </div>
+<% } else if (!files || files.length === 0) { %>
+    <p>No files in your team yet.</p>
+<% } else { %>
+    <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Size (KB)</th>
+                <th>Owner</th>
+                <th>Primary Node</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% files.forEach(f => { %>
+                <tr>
+                    <td><strong><%= f.fileName %></strong></td>
+                    <td><%= Math.round(f.fileSize / 1024) %></td>
+                    <td><%= f.owner.name %></td>
+                    <td><%= f.storageNode.nodeName %></td>
+                    <td>
+                        <% if (f.status === "pending_confirmation") { %>
+                            <span style="color: orange; font-weight: bold;">⏳ Pending Confirmation</span>
+                        <% } else if (f.status === "pending_approval") { %>
+                            <span style="color: #ff6b6b; font-weight: bold;">⏸️ Pending Leader Approval</span>
+                        <% } else if (f.status === "pending_delete") { %>
+                            <span style="color: #dc3545; font-weight: bold;">🗑️ Deletion Pending</span>
+                        <% } else { %>
+                            <span style="color: green; font-weight: bold;">✓ Synced</span>
+                        <% } %>
+                    </td>
+                    <td>
+                        <% /* Member actions for pending_confirmation */ %>
+                        <% if (f.status === "pending_confirmation" && (f.changeType === "create" || f.changeType === "edit" || f.changeType === "delete")) { %>
+                            <% if (user._id.toString() === f.owner._id.toString() || f.lastModifiedBy.toString() === user._id.toString()) { %>
+                                <form action="/files/<%= f._id %>/confirm" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn-small btn-confirm" onclick="return confirm('Confirm this change?')">Confirm Change</button>
+                                </form>
+                            <% } %>
+                        <% } %>
+
+                        <% /* Member actions for pending_approval on edits */ %>
+                        <% if (f.status === "pending_approval" && f.changeType === "edit") { %>
+                            <% if (user._id.toString() === f.owner._id.toString()) { %>
+                                <button class="btn-small" style="background: #6c757d; color: white;" disabled>Awaiting Leader</button>
+                            <% } %>
+                        <% } %>
+
+                        <% /* Leader actions for pending_approval */ %>
+                        <% if (f.status === "pending_approval" && typeof currentTeam !== 'undefined' && currentTeam && currentTeam.leader && currentTeam.leader._id && user._id && currentTeam.leader._id.toString() === user._id.toString()) { %>
+                            <form action="/files/<%= f._id %>/approve" method="POST" style="display: inline;">
+                                <button type="submit" class="btn-small btn-approve" onclick="return confirm('Approve and sync this change?')">✓ Approve & Sync</button>
+                            </form>
+                            <form action="/files/<%= f._id %>/reject" method="POST" style="display: inline;">
+                                <button type="submit" class="btn-small btn-reject" onclick="return confirm('Reject this change?')">✗ Reject & Revert</button>
+                            </form>
+                        <% } %>
+
+                        <% /* View button for all team members */ %>
+                        <a href="/files/<%= f._id %>/view" class="btn-small btn-view">👁️ View</a>
+
+                        <% /* Edit button for synced files */ %>
+                        <% if (f.status === "synced") { %>
+                            <a href="/files/<%= f._id %>/edit-form" class="btn-small btn-edit">✏️ Edit</a>
+                        <% } %>
+
+                        <% /* Delete button for synced files */ %>
+                        <% if (f.status === "synced") { %>
+                            <form action="/files/<%= f._id %>/delete-request" method="POST" style="display: inline;">
+                                <button type="submit" class="btn-small btn-delete" onclick="return confirm('Request deletion of this file?')">🗑️ Delete</button>
+                            </form>
+                        <% } %>
+
+                        <% /* Leader actions for pending_delete */ %>
+                        <% if (f.status === "pending_delete" && typeof currentTeam !== 'undefined' && currentTeam && currentTeam.leader && currentTeam.leader._id && user._id && currentTeam.leader._id.toString() === user._id.toString()) { %>
+                            <form action="/files/<%= f._id %>/approve" method="POST" style="display: inline;">
+                                <button type="submit" class="btn-small btn-approve" onclick="return confirm('Approve deletion?')">✓ Approve Delete</button>
+                            </form>
+                            <form action="/files/<%= f._id %>/reject" method="POST" style="display: inline;">
+                                <button type="submit" class="btn-small btn-reject" onclick="return confirm('Reject deletion?')">✗ Reject</button>
+                            </form>
+                        <% } %>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+<% } %>
+
+<style>
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .button:hover {
+        background: #0056b3;
+    }
+
+    table {
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    table th {
+        background: #f8f9fa;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    table td {
+        vertical-align: middle;
+    }
+
+    .btn-small {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-right: 5px;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-confirm {
+        background: #ffc107;
+        color: black;
+    }
+
+    .btn-confirm:hover {
+        background: #e0a800;
+    }
+
+    .btn-approve {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-approve:hover {
+        background: #218838;
+    }
+
+    .btn-reject {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-reject:hover {
+        background: #c82333;
+    }
+
+    .btn-edit {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background: #138496;
+    }
+
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background: #c82333;
+    }
+
+    .btn-view {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .btn-view:hover {
+        background: #138496;
+    }
+
+    .alert {
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 4px;
+    }
+
+    .alert-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+</style>

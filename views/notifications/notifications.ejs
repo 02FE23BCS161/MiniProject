@@ -1,0 +1,106 @@
+<h2>Your Notifications</h2>
+
+<% if (!notifications || notifications.length === 0) { %>
+    <p>No notifications yet.</p>
+<% } else { %>
+    <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>Message</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% notifications.forEach(n => { %>
+                <tr style="background: <%= n.read ? '#f9f9f9' : '#fff3cd' %>;">
+                    <td>
+                        <%= n.message %>
+                        <% if (!n.read) { %>
+                            <span style="color: orange; font-weight: bold;"> [NEW]</span>
+                        <% } %>
+                    </td>
+                    <td>
+                        <% if (n.type === "file_change") { %>
+                            📁 File Change
+                        <% } else if (n.type === "approval_required") { %>
+                            ⏸️ Needs Approval
+                        <% } else if (n.type === "sync_complete") { %>
+                            ✓ Synced
+                        <% } else if (n.type === "change_rejected") { %>
+                            ✗ Rejected
+                        <% } else { %>
+                            📢 <%= n.type %>
+                        <% } %>
+                    </td>
+                    <td><small><%= n.createdAt.toLocaleString() %></small></td>
+                    <td>
+                        <% if (!n.read) { %>
+                            <a href="/notifications/read/<%= n._id %>" class="btn-small btn-read">Mark as Read</a>
+                        <% } else { %>
+                            <span style="color: green;">✓ Read</span>
+                        <% } %>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+<% } %>
+
+<style>
+    table {
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    table th {
+        background: #f8f9fa;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    table td {
+        vertical-align: middle;
+    }
+
+    .btn-small {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-right: 5px;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-read {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .btn-read:hover {
+        background: #138496;
+    }
+
+    .btn-approve {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-approve:hover {
+        background: #218838;
+    }
+
+    .btn-reject {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-reject:hover {
+        background: #c82333;
+    }
+</style>

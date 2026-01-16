@@ -1,0 +1,39 @@
+<h2>Team: <%= team.teamName %></h2>
+
+<h3>Leader:</h3>
+<p>
+    <% if (team.leader) { %>
+        <%= team.leader.name %> (<%= team.leader.email %>)
+    <% } else { %>
+        <%= team.leaderName || 'Unknown' %>
+    <% } %>
+</p>
+
+<h3>Members:</h3>
+<ul>
+    <% team.members.forEach(m => { %>
+        <li><%= m.name %> (<%= m.email %>)</li>
+    <% }) %>
+</ul>
+
+<% /* show add-member form only to leader */ %>
+<%
+    let isLeader = false;
+    if (team.leader && user && team.leader._id && user._id && team.leader._id.toString() === user._id.toString()) {
+        isLeader = true;
+    }
+    if (!team.leader && user && team.leaderName && team.leaderName === user.name) {
+        isLeader = true;
+    }
+%>
+
+<% if (isLeader) { %>
+    <h4>Add member</h4>
+    <form action="/teams/<%= team._id %>/add-member" method="POST">
+        <label>Member Email</label>
+        <input type="email" name="memberEmail" required>
+        <button type="submit">Add Member</button>
+    </form>
+<% } %>
+
+<a href="/teams">Back to Teams</a>

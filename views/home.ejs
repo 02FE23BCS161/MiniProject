@@ -1,0 +1,35 @@
+<h1 class="home-h1">Distributed File System Simulator</h1>
+
+<% if (!user) { %>
+    <p>Please <a href="/auth/login">login</a> to continue.</p>
+<% } else { %>
+    <p class="home-p">Welcome, <strong><%= user.name %>!</strong></p>
+    
+    <% /* Display current team details if user has selected a team */ %>
+    <% if (currentTeam) { %>
+        <div style="border:1px solid #ddd;padding:15px;margin:15px 0;border-radius:5px;background-color:#f9f9f9;">
+            <h3>Current Team Details</h3>
+            <p><strong>Team Name:</strong> <%= currentTeam.teamName %></p>
+            
+            <p><strong>Leader:</strong> 
+                <% if (currentTeam.leader) { %>
+                    <%= currentTeam.leader.name %> (<%= currentTeam.leader.email %>)
+                <% } else { %>
+                    <%= currentTeam.leaderName || 'Unknown' %>
+                <% } %>
+            </p>
+            
+            <p><strong>Members:</strong></p>
+            <ul>
+                <% if (currentTeam.members && currentTeam.members.length) { %>
+                    <% currentTeam.members.forEach(member => { %>
+                        <li><%= member.name %> (<%= member.email %>)</li>
+                    <% }) %>
+                <% } else { %>
+                    <li>No members</li>
+                <% } %>
+            </ul>
+        </div>
+    <% } %>
+
+<% } %>

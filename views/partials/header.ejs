@@ -1,0 +1,23 @@
+<nav class="navbar">
+    <a href="/">Home</a>
+
+    <% if (user) { %>
+        <!-- <a href="/teams">Teams</a> -->
+        <a href="/teams/create">Create Team</a>
+        <a href="/files">Files</a>
+        <a href="/nodes">Servers</a>
+        <a href="/notifications">Notifications</a>
+
+        <% if (typeof currentTeam !== 'undefined' && currentTeam) { %>
+            <span class="current-team">Current: <%= currentTeam.teamName %></span>
+            <a href="/teams/select">Change Team</a>
+        <% } else if (typeof user !== 'undefined' && user) { %>
+            <a href="/teams/select">Join/Select Team</a>
+        <% } %>
+
+        <a href="/auth/logout" class="logout">Logout</a>
+    <% } else { %>
+        <a href="/auth/login">Login</a>
+        <a href="/auth/register">Register</a>
+    <% } %>
+</nav>
