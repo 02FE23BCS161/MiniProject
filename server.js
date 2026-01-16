@@ -36,7 +36,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-        mongoUrl: process.env.MONGO_URI
+        mongoUrl: process.env.ATLAS_URL
     }),
     cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 day
 }));
@@ -85,4 +85,5 @@ app.use("/notifications", require("./routes/notificationRoutes"));
 // ------------------------------------------
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
+
 });
